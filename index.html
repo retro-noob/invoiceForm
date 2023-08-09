@@ -1,0 +1,947 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice Form</title>
+  
+  <style>
+      body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+  
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+    }
+    textarea {
+      resize: vertical;
+      height: 100px;
+    }
+    button {
+      background-color: rgb(96, 154, 96);
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      margin-bottom: 30px;
+    }
+    .item-container {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .item-container label {
+      display: inline-block;
+      width: 150px;
+      margin-bottom: 0;
+    }
+    #invoiceResult {
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      
+      justify-content: space-between;
+    }
+    #invoiceResult label {
+      display: inline-block;
+      width: 150px;
+      font-weight: bold;
+    }
+    #currencySymbol {
+      font-weight: bold;
+    }
+    .download-btn {
+      margin-top: 20px;
+      display: block;
+    }
+
+    .container {
+    display: flex;
+    justify-content: space-between;
+    
+  }
+
+  .left,
+  .right {
+    width: 48%;
+    padding: 10px;
+      border: 1px solid #ccc;
+  }
+
+  .left {
+    align-self: flex-start;
+  }
+
+  .image-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .placeholder {
+    color: #ccc;
+  }
+
+  #logoInput {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .sub1 {
+    margin-bottom: 10px;
+  }
+
+  .sub2,
+  .sub3 {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .feild_container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .feild_container label {
+   width:300px;
+    margin-right: 10px;
+  }
+
+  .feild_container input{
+    width:50%;
+  }
+
+
+
+  .right {
+   align-self: flex-end;
+  }
+
+
+  .table {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .item-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .field-row {
+    display: flex;
+    margin-bottom: 10px;
+  }
+
+  .field-row label {
+    flex: 1;
+    margin-right: 10px;
+    text-align: right;
+  }
+
+  .field-row input {
+    flex: 1;
+  }
+
+  .black{
+    background: black;
+    color:white;
+  }
+
+  </style>
+
+
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
+  
+</head>
+<body>
+ 
+  <form id="invoiceForm">
+    <div class="container">
+      <div class="left">
+        <div class="image-container" id="logoContainer">
+          <div class="placeholder">+Add Your Logo</div>
+          <input type="file" id="logoInput" accept="image/*">
+        </div>
+        
+        <div class="sub1">
+          <input type="text" id="from" required placeholder="Who is this invoice from? (required)">
+        </div>
+      
+        <div class="sub2">
+          <div class="feild_container">
+            <label id="1" for="to">Bill To </label>
+            <label id="2" for="shipTo">Ship To</label>
+          </div>
+      
+          <div class="feild_container">
+            <input type="text" id="to" placeholder="Who is this invoice to ?(required)">
+            <input type="text" id="shipTo" placeholder="(optional)">
+          </div>
+        </div>
+      </div>
+    
+      <div class="right">
+        <h2>Invoice</h2>
+        <div class="sub3">
+          <div class="feild_container">
+            <label id="3" for="date">Date</label>
+            <input type="date" id="date" required>
+          </div>
+      
+          <div class="feild_container">
+            <label id="4" for="paymentTerms">Payment Terms</label>
+            <input type="text" id="paymentTerms" required>
+          </div>
+      
+          <div class="feild_container">
+            <label for="dueDate">Due Date</label>
+            <input type="date" id="dueDate" required>
+          </div>
+      
+          <div class="feild_container">
+            <label for="poNumber">PO Number</label>
+            <input type="text" id="poNumber">
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="table">
+      <div id="itemsContainer">
+        <div class="item-container">
+          <div class="black">
+          <div class="field-row">
+            <label id="5" for="item1">Item</label>
+            <label for="description1">Description of service or product...</label>
+            <label id="7" for="amount1">Amount</label>
+            <label id="6" for="quantity1">Quantity</label>
+          </div>
+          </div>
+          <div class="field-row">
+            <input type="text" id="item1" required>
+            <input type="text" id="description1" required>
+            <input type="number" step="0.01" id="amount1" required oninput="calculateSubtotal()" />
+            <input type="number" id="quantity1" required oninput="calculateSubtotal()" />
+          </div>
+        </div>
+      </div>
+    </div>
+   
+    <button type="button" onclick="addItem()">+ Line Item</button>
+    <div class="container">
+<div class="left">
+    <label for="terms">Terms </label>
+    <textarea id="terms" required placeholder="Terms and conditions - late fees, payment methods, delivery schedule"></textarea>
+
+  <label for="notes">Notes</label>
+  <textarea id="notes"  placeholder="Notes-any relevant information not already covered"></textarea>
+</div>
+
+  <div class="right">  
+    <div id="invoiceResult">
+      <label for="subtotal">Subtotal</label>
+      <div>
+      <input type="number" step="0.01" id="subtotal" required readonly>
+    </div>
+
+
+    
+      <label id="8" for="discount">Discount (%)</label>
+      <input type="number" step="0.01" id="discount" value="0" oninput="calculateTotal()" required>
+
+      <label id="9" for="tax">Tax</label>
+      <input type="number" step="0.01" id="tax" value="0" oninput="calculateTotal()" required>
+
+      <label id="10" for="shipping">Shipping</label>
+      <input type="number" step="0.01" id="shipping" value="0" oninput="calculateTotal()" required>
+
+      <label id="11" for="total">Total</label>
+      <div>
+        <span id="subtotalAmount"></span>
+        <span id="currencySymbol" class="currency-symbol"></span>
+      </div>
+      <input type="number" step="0.01" id="total" required readonly>
+
+      <label for="amountPaid">Amount Paid</label>
+      <div>
+        <span id="subtotalAmount"></span>
+        <span id="currencySymbol" class="currency-symbol"></span>
+      </div>
+      <input type="number" step="0.01" id="amountPaid" value="0" oninput="calculateBalanceDue()" required>
+
+      <label for="balanceDue">Balance Due</label>
+      <div>
+        <span id="subtotalAmount"></span>
+        <span id="currencySymbol" class="currency-symbol"></span>
+      </div>
+      <input type="number" step="0.01" id="balanceDue" required readonly>
+    </div>
+    
+
+  </div>
+
+    </div>
+
+    <label for="currency">Currency</label>
+    <select id="currency" onchange="updateCurrencySymbol()">
+      <option value="USD" selected>USD</option>
+      <option value="EUR">EUR</option>
+   
+    </select>
+
+ 
+    <button type="button" id="download-btn" onclick="generatePDF()">Download Invoice</button>
+  </form>
+
+
+
+  <script>
+    let itemCount = 1;
+
+    function addItem() {
+      itemCount++;
+      const itemContainer = document.createElement('div');
+      itemContainer.classList.add('item-container');
+      itemContainer.innerHTML = `
+          <div class="field-row">
+            <input type="text" id="item${itemCount}" required>
+            <input type="text" id="description${itemCount}" required>
+            <input type="number" step="0.01" id="amount${itemCount}" required oninput="calculateSubtotal()" />
+            <input type="number" id="quantity${itemCount}" required oninput="calculateSubtotal()" />
+          </div>
+
+  `;
+      document.getElementById('itemsContainer').appendChild(itemContainer);
+    }
+
+
+    const currencySymbols = {
+  USD: '$',
+  EUR: '€'
+
+};
+
+function updateCurrencySymbol() {
+  const currency = document.getElementById('currency').value;
+  const currencySymbol = currencySymbols[currency];
+  document.querySelectorAll('.currency-symbol').forEach(element => {
+    element.innerText = currencySymbol;
+  });
+  calculateTotal();
+}
+
+    function calculateSubtotal() {
+      let subtotal = 0;
+      for (let i = 1; i <= itemCount; i++) {
+        const amount = parseFloat(document.getElementById(`amount${i}`).value);
+        const quantity = parseFloat(document.getElementById(`quantity${i}`).value);
+        subtotal += amount * quantity;
+      }
+      document.getElementById('subtotal').value = subtotal.toFixed(2);
+      calculateTotal();
+    }
+
+    function calculateTotal() {
+      let subtotal = parseFloat(document.getElementById('subtotal').value);
+      const discountPercent = parseFloat(document.getElementById('discount').value);
+      const tax = parseFloat(document.getElementById('tax').value);
+      const shipping = parseFloat(document.getElementById('shipping').value);
+      const discountAmount = subtotal * (discountPercent / 100);
+      const total = subtotal - discountAmount + tax + shipping;
+      document.getElementById('total').value = total.toFixed(2);
+      calculateBalanceDue();
+    }
+
+    function calculateBalanceDue() {
+      const total = parseFloat(document.getElementById('total').value);
+      const amountPaid = parseFloat(document.getElementById('amountPaid').value);
+      const balanceDue = total - amountPaid;
+      document.getElementById('balanceDue').value = balanceDue.toFixed(2);
+    }
+
+    
+    // document.getElementById('download-btn').addEventListener('click', () => {
+    //        const nameValue = document.getElementById('from').value;
+
+    //        const docDefinition = {
+    //            content: [
+    //                {
+    //                    text: 'Generated PDF from Form Data',
+    //                    style: 'header'
+    //                },
+    //                {
+    //                    text: `Name: ${nameValue}`,
+    //                    margin: [0, 10, 0, 0]
+    //                },
+    //                // Add more content as needed
+    //            ],
+    //            styles: {
+    //                header: {
+    //                    fontSize: 18,
+    //                    bold: true,
+    //                    margin: [0, 0, 0, 10]
+    //                }
+    //            }
+    //        };
+
+    //        pdfMake.createPdf(docDefinition).download('form.pdf');
+    //    });
+
+//     function generatePDF() {
+//   const docDefinition = {
+//     content: [
+
+
+//     { text: ' Tax Invoice', style: 'header' },
+
+ 
+
+// {
+//     columns:[
+//      {stack:[
+//       { text: 'From', bold:true},
+//       {
+//         text: '\n'
+//       }, 
+//       { text: document.getElementById('from').value }],
+//     },
+     
+
+//      { stack:[
+//       { text: 'Date', bold:true},
+//       {
+//         text: '\n'
+//       }, 
+//       { text: document.getElementById('date').value },
+    
+//       {
+//         text: '\n'
+//       }, 
+//       {
+//         text: '\n'
+//       }, 
+
+//       { text: 'Due Date', bold:true},
+//       {
+//         text: '\n'
+//       }, 
+//       { text: document.getElementById('dueDate').value },
+//      ],
+//      },
+//   ],
+
+// },
+
+
+// {
+//         text: '\n'
+//       }, 
+
+//       {
+//         text: '\n'
+//       }, 
+
+//       {
+//         text: '\n'
+//       }, 
+// {
+// columns:[
+
+// {stack:[  
+//    { text: 'Bill To', bold:true },
+//    {
+//         text: '\n'
+//       }, 
+//       { text: document.getElementById('to').value }
+//     ],
+//     },
+   
+
+//   {stack:[
+//     { text: 'Ship To', bold:true },
+//     {
+//         text: '\n'
+//       }, 
+     
+//       { text: document.getElementById('shipTo').value }
+//   ],
+//  }
+    
+// ]
+// },
+
+// {
+//         text: '\n'
+//       }, 
+//       {
+//         text: '\n'
+//       }, 
+//       {
+//         text: '\n'
+//       }, 
+
+
+//     {layout:'lightHorizontalLines',
+//     table: {
+    
+//       headerRows: 1,
+//       widths: [ '*', 'auto', 100, '*' ],
+
+//       body: [
+//         [ 'Sr No', 'Item', 'Quantity', 'Amount' ],
+//         ...generateTableRows(),
+//       ]
+//     }},
+//     {
+//         text: '\n'
+//       },
+//       {
+//         text: '\n'
+//       }, 
+//     {
+
+
+
+//       table: {
+   
+//       headerRows: 1,
+//       widths: [ '*', 'auto', 100, '*' ],
+
+//       body: [
+//         [ 'Discount(%)', 'Tax.', 'Shipping', 'Total' ],
+//         [{text: document.getElementById('discount').value},{text: document.getElementById('tax').value},{text: document.getElementById('shipping').value},{text: document.getElementById('total').value}]
+//       ]
+//     }},
+
+//     {
+//         text: '\n'
+//       }, 
+//     { text: 'Transaction Details', style: 'subheader' }, 
+//     {
+//       columns: [
+//           { text: 'PO Number:', bold: true },
+//           { text: document.getElementById('poNumber').value },
+//           { width: '*', text: '' }, // Adjust columnGap here
+//           { text: 'Payment Terms:', bold: true },
+//           { text: document.getElementById('paymentTerms').value }
+//         ]
+//       },
+//       {
+//         text: '\n'
+//       }, 
+//       {
+//         text: '\n'
+//       }, 
+
+
+
+   
+//    { text: 'Notes', style: 'subheader', layout: 'lightHorizontalLines', },
+//    { width: '*', text: '' }, 
+//       { text: document.getElementById('notes').value},
+
+//       {
+//         text: '\n'
+//       }, 
+     
+
+//       { text: 'Terms', style: 'subheader', layout: 'lightHorizontalLines', },
+//       { width: '*', text: '' }, 
+//       { text: document.getElementById('terms').value}
+
+  
+      
+//     ],
+//     styles: {
+//       header: {
+//         fontSize: 14,
+//         bold: true,
+//         alignment: 'center',
+//         margin: [0, 0, 0, 10],
+//       },
+//       subheader: {
+//         fontSize: 11,
+//         bold: true,
+//         margin: [0, 10, 0, 5],
+//       },
+//     },
+//   };
+
+//   pdfMake.createPdf(docDefinition).download('invoice.pdf');
+// }
+// function generateTableRows() {
+//   const rows = [];
+//   for (let i = 1; i <= itemCount; i++) {
+//     const item = document.getElementById(`item${i}`).value;
+//     const quantity = document.getElementById(`quantity${i}`).value;
+//     const amount = document.getElementById(`amount${i}`).value;
+
+//     rows.push([
+//       { text: `${i}`, alignment: 'center' },
+//       { text: item },
+//       { text: quantity, alignment: 'center' },
+//       { text: amount, alignment: 'right' },
+    
+    
+//     ]);
+//   }
+//   return rows;
+// }
+
+
+
+// function generatePDF() {
+//   const docDefinition = {
+//     content: [
+//       {
+         
+//         table: {
+//           widths: ['*'],
+//           body: [
+//             // Row 1
+//             [
+//               {
+//                 stack: [
+//                   { text: 'Tax Invoice', style: 'header' },
+//                 ],
+//                 margin: [0, 0, 0, 10], 
+//               },
+//             ],
+//             // Row 2
+//             [
+//               {
+//                 stack: [
+//                   {
+//                     columns: [
+//                       {
+//                         stack: [
+//                           { text: 'From', bold: true },
+//                           '\n',
+//                           document.getElementById('from').value,
+//                         ],
+//                       },
+                     
+                    
+//                       {
+//                         stack: [
+//                           { text: 'Date', bold: true },
+//                           '\n',
+//                           document.getElementById('date').value,
+//                           '\n\n',
+//                           { text: 'Due Date', bold: true },
+//                           '\n',
+//                           document.getElementById('dueDate').value,
+//                         ],
+//                       },
+//                     ],
+//                   },
+//                 ],
+//                 margin: [0, 0, 0, 10], 
+//               },
+//             ],
+//             // Row 3
+//             [
+//               {
+//                 stack: [
+//                   {
+//                     columns: [
+//                       {
+//                         stack: [
+//                           { text: 'Bill To', bold: true },
+//                           '\n',
+//                           document.getElementById('to').value,
+//                           '\n',
+//                           '\n',
+//                         ],
+//                       },
+//                       {
+//                         stack: [
+//                           { text: 'Ship To', bold: true },
+//                           '\n',
+//                           document.getElementById('shipTo').value,
+//                           '\n',
+//                           '\n',
+//                         ],
+//                       },
+//                     ],
+//                   },
+//                 ],
+//                 margin: [0, 0, 0, 10], 
+//               },
+//             ],
+//             // Row 4
+            
+//             [
+//               {
+//                 layout: 'lightHorizontalLines',
+//                 table: {
+//                   headerRows: 1,
+//                   widths: ['*', 'auto', 100, '*'],
+//                   body: [
+//                     ['Sr No', 'Item', 'Quantity', 'Amount'],
+//                     ...generateTableRows(),
+                   
+//                   ],
+//                 },
+//                 margin: [0, 0, 0, 10], 
+//               },
+//             ],
+//             // Row 5
+
+            
+//             [
+//               {
+//                 layout: 'lightHorizontalLines',
+//                 table: {
+//                   headerRows: 1,
+//                   widths: ['*', 'auto', 100, '*'],
+//                   body: [
+//                     ['Discount(%)', 'Tax.', 'Shipping', 'Total'],
+//                     [
+//                       { text: document.getElementById('discount').value },
+//                       { text: document.getElementById('tax').value },
+//                       { text: document.getElementById('shipping').value },
+//                       { text: document.getElementById('total').value },
+//                     ],
+//                   ],
+//                 },
+//                 margin: [0, 0, 0, 10],
+//               },
+//             ],
+//             // Row 6
+//             [
+//               {
+//                 stack: [
+//                 '\n',
+//                 '\n',
+//                   { text: 'Transaction Details', style: 'subheader' },
+//                   {
+//                     columns: [
+//                       { text: 'PO Number:', bold: true },
+//                       document.getElementById('poNumber').value,
+//                       { width: '*', text: '' },
+//                       { text: 'Payment Terms:', bold: true },
+//                       document.getElementById('paymentTerms').value,
+//                     ],
+//                   },
+//                   ],
+//                 margin: [0, 0, 0, 10], 
+//               },
+//             ],
+
+//             [{ stack:[
+//                   '\n\n', 
+//                   { text: 'Notes', style: 'subheader', layout: 'lightHorizontalLines' },
+//                   '\n',
+//                   document.getElementById('notes').value,
+//                   '\n\n',
+//                   { text: 'Terms', style: 'subheader', layout: 'lightHorizontalLines' },
+//                   '\n',
+//                   document.getElementById('terms').value
+//                 ], margin: [0, 0, 0, 10],}]
+               
+//           ],
+//         },
+//       },
+//     ],
+//     styles: {
+//       header: {
+//         fontSize: 14,
+//         bold: true,
+//         alignment: 'center',
+//       },
+//       subheader: {
+//         fontSize: 11,
+//         bold: true,
+//         margin: [0, 10, 0, 0], 
+//       },
+//     },
+//   };
+
+//   pdfMake.createPdf(docDefinition).download('invoice.pdf');
+// }
+
+// function generateTableRows() {
+//   const rows = [];
+//   for (let i = 1; i <= itemCount; i++) {
+//     const item = document.getElementById(`item${i}`).value;
+//     const quantity = document.getElementById(`quantity${i}`).value;
+//     const amount = document.getElementById(`amount${i}`).value;
+
+//     rows.push([
+//       { text: `${i}`, alignment: 'center' },
+//       { text: item },
+//       { text: quantity, alignment: 'center' },
+//       { text: amount, alignment: 'center' },
+//     ]);
+//   }
+//   return rows;
+// }
+
+
+
+
+
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
